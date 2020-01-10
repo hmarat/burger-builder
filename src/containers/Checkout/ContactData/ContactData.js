@@ -11,56 +11,87 @@ export default class ContactData extends Component {
         orderForm: {
             name: {
                 elementType: "input",
-                elementConfig:{
+                elementConfig: {
                     placeholder: "Name",
                     type: "text"
                 },
-                value: ""
+                value: "",
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             country: {
                 elementType: "input",
-                elementConfig:{
+                elementConfig: {
                     placeholder: "Country",
                     type: "text"
                 },
-                value: ""
+                value: "",
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             street: {
                 elementType: "input",
-                elementConfig:{
+                elementConfig: {
                     placeholder: "Street",
                     type: "text"
                 },
-                value: ""
+                value: "",
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             zipCode: {
                 elementType: "input",
-                elementConfig:{
+                elementConfig: {
                     placeholder: "Zip code",
                     type: "text"
                 },
-                value: ""
+                value: "",
+                validation: {
+                    required: true,
+                    minLength: 5,
+                    maxLength: 5
+                },
+                valid: false,
+                touched: false
             },
             email: {
                 elementType: "input",
-                elementConfig:{
+                elementConfig: {
                     placeholder: "E-mail",
                     type: "email"
                 },
-                value: ""
+                value: "",
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             deliveryMethod: {
                 elementType: "select",
-                elementConfig:{
-                    options:[
-                        {value: "fastest", displayValue: "Fastest"},
-                        {value: "cheapest", displayValue: "Cheapest"}
+                elementConfig: {
+                    options: [
+                        { value: "fastest", displayValue: "Fastest" },
+                        { value: "cheapest", displayValue: "Cheapest" }
                     ]
                 },
-                value: ""
+                validation: {},
+                value: "",
+                valid: true,
+                touched: false
             }
         },
-        loading: false
+        loading: false,
+        formIsValid: false
     }
 
     makeOrderHandler = (evt) => {
@@ -70,19 +101,15 @@ export default class ContactData extends Component {
             return { loading: true }
         })
 
+        const formData = {};
+        for (let elementIdentifier in this.state.orderForm) {
+            formData[elementIdentifier] = this.state.orderForm[elementIdentifier].value;
+        }
+
         const order = {
             ingredients: this.props.ingredients,
             price: this.props.price,
-            customer: {
-                name: "Marat Hakobjanyan",
-                address: {
-                    country: "Armenia",
-                    street: "Test Street 2",
-                    zipCode: "375000"
-                },
-                email: "test@test.com"
-            },
-            deliveryMethod: "fastest"
+            orderData: formData
         }
 
         axios.post("/orders.json", order)
@@ -95,24 +122,71 @@ export default class ContactData extends Component {
             });
     }
 
+    checkValidity = (value, rules) => {
+        let isValid = true;
+        if (!rules) {
+            return true;
+        }
+
+        if (rules.required) {
+            isValid = isValid && value.trim() !== "";
+        }
+        if (rules.minLength) {
+            isValid = isValid && value.length >= rules.minLength;
+        }
+        if (rules.maxLength) {
+            isValid = isValid && value.length <= rules.maxLength;
+        }
+
+        return isValid;
+    }
+
+    inputChangedHandler = (event, identifier) => {
+        const updatedOrderForm = { ...this.state.orderForm };
+        const updatedElement = updatedOrderForm[identifier];
+        updatedElement["value"] = event.target.value;
+        updatedElement["valid"] = this.checkValidity(event.target.value, updatedElement.validation);
+        updatedElement["touched"] = true;
+
+        updatedOrderForm[identifier] = updatedElement;
+
+        let formIsValid = true;
+        for (let inputElementIdentifier in updatedOrderForm) {
+            formIsValid = formIsValid && updatedOrderForm[inputElementIdentifier].valid;
+        }
+        this.setState({
+            orderForm: updatedOrderForm,
+            formIsValid
+        })
+    }
+
     render() {
         const formElementsArray = [];
 
-        for(let key in this.state.orderForm){
+        for (let key in this.state.orderForm) {
             formElementsArray.push({
                 id: key,
                 config: this.state.orderForm[key]
             })
-        }  
+        }
 
         let form = (
-            <form>
-                {formElementsArray.map(element =>{
-                    return(
-                        <Input key={element.id} elementType={element.config.elementType} elementConfig={element.config.elementConfig} value={element.config.value}/>
+            <form onSubmit={this.makeOrderHandler}>
+                {formElementsArray.map(element => {
+                    return (
+                        <Input
+                            key={element.id}
+                            elementType={element.config.elementType}
+                            elementConfig={element.config.elementConfig}
+                            value={element.config.value}
+                            changed={(event) => this.inputChangedHandler(event, element.id)}
+                            invalid={!element.config.valid}
+                            shouldValidate={element.config.validation}
+                            touched={element.config.touched}
+                        />
                     )
                 })}
-                <Button btnType="Success" clicked={this.makeOrderHandler}>ORDER</Button>
+                <Button btnType="Success" disabled={!this.state.formIsValid}>ORDER</Button>
             </form>
         )
 
