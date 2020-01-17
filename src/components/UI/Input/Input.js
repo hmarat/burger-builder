@@ -31,7 +31,7 @@ const Input = props => {
             <select value={props.value} className={inputClasses.join(" ")} onChange={props.changed}>
                 {props.elementConfig.options.map(option => {
                     return (
-                        <option value={option.value}>{option.displayValue}</option>
+                        <option key={option.value} value={option.value}>{option.displayValue}</option>
                     )
                 })}
             </select>

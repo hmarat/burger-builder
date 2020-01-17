@@ -6,7 +6,7 @@ import Button from "../../../components/UI/Button/Button"
 import classes from "./ContactData.module.css"
 import Spinner from "../../../components/UI/Spinner/Spinner"
 import Input from "../../../components/UI/Input/Input"
-import {purchaseBurger} from "../../../store/actions/index"
+import { purchaseBurger } from "../../../store/actions/index"
 import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler"
 
 class ContactData extends Component {
@@ -88,7 +88,7 @@ class ContactData extends Component {
                     ]
                 },
                 validation: {},
-                value: "",
+                value: "fastest",
                 valid: true,
                 touched: false
             }

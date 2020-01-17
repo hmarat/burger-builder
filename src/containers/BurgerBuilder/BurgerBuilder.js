@@ -9,7 +9,7 @@ import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary"
 import axios from "../../axios-order"
 import Spinner from "../../components/UI/Spinner/Spinner"
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler"
-import { addIngredient, removeIngredient, initIngredients } from "../../store/actions/index"
+import { addIngredient, removeIngredient, initIngredients, purchaseInit } from "../../store/actions/index"
 
 class BurgerBuilder extends Component {
     state = {
@@ -40,6 +40,7 @@ class BurgerBuilder extends Component {
     }
 
     continuePurchaseHandler = () => {
+        this.props.onPurchaseInit();
         this.props.history.push({
             pathname: "/checkout"
         });
@@ -104,7 +105,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
     onIngredientAdded: (ingName) => dispatch(addIngredient(ingName)),
     onIngredientRemoved: (ingName) => dispatch(removeIngredient(ingName)),
-    onIngredientsLoaded: () => dispatch(initIngredients())
+    onIngredientsLoaded: () => dispatch(initIngredients()),
+    onPurchaseInit: () => dispatch(purchaseInit())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios))
