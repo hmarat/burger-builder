@@ -6,6 +6,8 @@ import Button from "../../../components/UI/Button/Button"
 import classes from "./ContactData.module.css"
 import Spinner from "../../../components/UI/Spinner/Spinner"
 import Input from "../../../components/UI/Input/Input"
+import {purchaseBurger} from "../../../store/actions/index"
+import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler"
 
 class ContactData extends Component {
     state = {
@@ -91,16 +93,11 @@ class ContactData extends Component {
                 touched: false
             }
         },
-        loading: false,
         formIsValid: false
     }
 
     makeOrderHandler = (evt) => {
         evt.preventDefault();
-
-        this.setState(() => {
-            return { loading: true }
-        })
 
         const formData = {};
         for (let elementIdentifier in this.state.orderForm) {
@@ -113,14 +110,7 @@ class ContactData extends Component {
             orderData: formData
         }
 
-        axios.post("/orders.json", order)
-            .then(response => {
-                this.setState({ loading: false })
-                this.props.history.push("/")
-            })
-            .catch(err => {
-                this.setState({ loading: false })
-            });
+        this.props.onBurgerOrdered(order)
     }
 
     checkValidity = (value, rules) => {
@@ -191,7 +181,7 @@ class ContactData extends Component {
             </form>
         )
 
-        if (this.state.loading) {
+        if (this.props.loading) {
             form = <Spinner />
         }
 
@@ -206,7 +196,12 @@ class ContactData extends Component {
 
 const mapStateToProps = state => ({
     ings: state.burgerBuilder.ingredients,
-    price: state.burgerBuilder.totalPrice
+    price: state.burgerBuilder.totalPrice,
+    loading: state.orders.loading
 })
 
-export default connect(mapStateToProps)(ContactData)
+const mapDispatchToProps = dispatch => ({
+    onBurgerOrdered: (orderData) => dispatch(purchaseBurger(orderData))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactData, axios))

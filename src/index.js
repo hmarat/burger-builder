@@ -8,10 +8,13 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import burgerBuilderReducer from "./store/reducers/burgerBuilder"
+import ordersReducer from "./store/reducers/orders"
+
 import thunk from 'redux-thunk';
 
 const rootReducer = combineReducers({
-    burgerBuilder: burgerBuilderReducer
+    burgerBuilder: burgerBuilderReducer,
+    orders: ordersReducer
 })
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
