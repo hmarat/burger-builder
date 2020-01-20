@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import { connect } from "react-redux"
 
 import classes from "./Layout.module.css"
 import Aux from "../Auxi/Auxi"
@@ -23,8 +24,8 @@ class Layout extends Component {
     render(){
         return (
             <Aux>
-                <Toolbar toggleMenuClicked={this.toggleMenuHandler} showMenu={this.state.showSideDrawer}/>
-                <SideDrawer show={this.state.showSideDrawer} closed={this.sideDrawerClosedHandler}/>
+                <Toolbar toggleMenuClicked={this.toggleMenuHandler} showMenu={this.state.showSideDrawer} isAuth={this.props.isAuth}/>
+                <SideDrawer show={this.state.showSideDrawer} closed={this.sideDrawerClosedHandler} isAuth={this.props.isAuth}/>
                 <main className={classes.Content}>
                     {this.props.children}
                 </main>
@@ -33,4 +34,8 @@ class Layout extends Component {
     }
 }
 
-export default Layout;
+const mapStateToProps = state => ({
+    isAuth: state.auth.token !== null
+})
+
+export default connect(mapStateToProps)(Layout)

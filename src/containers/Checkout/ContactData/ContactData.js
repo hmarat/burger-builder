@@ -107,10 +107,11 @@ class ContactData extends Component {
         const order = {
             ingredients: this.props.ings,
             price: this.props.price,
-            orderData: formData
+            orderData: formData,
+            userId: this.props.userId
         }
 
-        this.props.onBurgerOrdered(order)
+        this.props.onBurgerOrdered(order, this.props.token)
     }
 
     checkValidity = (value, rules) => {
@@ -197,11 +198,13 @@ class ContactData extends Component {
 const mapStateToProps = state => ({
     ings: state.burgerBuilder.ingredients,
     price: state.burgerBuilder.totalPrice,
-    loading: state.orders.loading
+    loading: state.orders.loading,
+    token: state.auth.token,
+    userId: state.auth.userId
 })
 
 const mapDispatchToProps = dispatch => ({
-    onBurgerOrdered: (orderData) => dispatch(purchaseBurger(orderData))
+    onBurgerOrdered: (orderData, token) => dispatch(purchaseBurger(orderData, token))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactData, axios))
