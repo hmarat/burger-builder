@@ -9,6 +9,7 @@ export const authStart = () => {
 }
 
 export const authSuccess = (idToken, localId) => {
+    console.log("Authenticated in redux, and data already are in redux store")
     return {
         type: actionTypes.AUTH_SUCCESS,
         idToken,
@@ -77,6 +78,12 @@ export const setAuthRedirectPath = (path) => {
     }
 }
 
+export const autoAuthFinished = () => {
+    return {
+        type: actionTypes.AUTO_AUTH_FINISHED
+    }
+}
+
 export const checkAuthState = () => {
     return dispatch => {
         const token = localStorage.getItem("token");
@@ -95,5 +102,6 @@ export const checkAuthState = () => {
                 dispatch(logout())
             }
         }
+        dispatch(autoAuthFinished());
     }
 }
