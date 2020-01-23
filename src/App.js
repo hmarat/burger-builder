@@ -1,4 +1,4 @@
-import React, { Component, Suspense } from 'react';
+import React, { Suspense, useEffect} from 'react';
 import { Route, Switch, Redirect } from 'react-router';
 import { connect } from 'react-redux';
 
@@ -12,14 +12,13 @@ const Checkout = React.lazy(() => import("./containers/Checkout/Checkout"));
 const Orders = React.lazy(() => import("./containers/Orders/Orders"));
 const Auth = React.lazy(() => import("./containers/Auth/Auth"));
 
-class App extends Component {
-  componentDidMount() {
-    this.props.onAutoAuth();
-  }
+const App = props => {
+  useEffect(() =>{
+    props.onAutoAuth();
+  }, [])
 
-  render() {
     let routes = <Spinner />;
-    if (this.props.autoAuthFinished) {
+    if (props.autoAuthFinished) {
       routes = (
         <Switch>
           <Route path="/" component={BurgerBuilder} exact />
@@ -27,7 +26,7 @@ class App extends Component {
           <Redirect to="/" />
         </Switch>
       )
-      if (this.props.isAuthenticated) {
+      if (props.isAuthenticated) {
         console.log("Got new props and the user is Authenticated!")
         routes = (
           <Switch>
@@ -52,7 +51,6 @@ class App extends Component {
       </div>
     )
   }
-}
 
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.token != null,
